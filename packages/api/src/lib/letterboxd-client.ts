@@ -17,6 +17,7 @@ export interface LetterboxdClientOptions {
   throttleCooldownMs?: number;
   retryDelayMs?: number;
   fetchImpl?: typeof fetch;
+  semaphore?: Semaphore;
 }
 
 export const NO_CACHE = -1;
@@ -37,7 +38,7 @@ export class LetterboxdClient {
     private readonly cache: TtlCache<FetchedPage>,
     options: LetterboxdClientOptions = {},
   ) {
-    this.semaphore = new Semaphore(options.concurrency ?? 4);
+    this.semaphore = options.semaphore ?? new Semaphore(options.concurrency ?? 4);
     this.fetchImpl = options.fetchImpl ?? fetch;
     this.throttleCooldownMs = options.throttleCooldownMs ?? 30_000;
     this.retryDelayMs = options.retryDelayMs ?? 300;
