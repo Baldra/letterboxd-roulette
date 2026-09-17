@@ -1,0 +1,25 @@
+{
+  "name": "letterboxd-roulette",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Random film picker for Letterboxd watchlists and public lists",
+  "workspaces": [
+    "packages/shared",
+    "packages/api",
+    "packages/web"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,green \"npm:dev -w @lr/api\" \"npm:dev -w @lr/web\"",
+    "build": "npm run build -w @lr/shared && npm run build -w @lr/api && npm run build -w @lr/web",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "start": "npm run start -w @lr/api"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0",
+    "typescript": "^5.9.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
