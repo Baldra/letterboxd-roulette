@@ -1,8 +1,10 @@
 import { useCallback, useState } from 'react';
 import type { ApiError, SpinResponse } from '@lr/shared';
-import { messageForStatus } from './errorMessages';
+import { Brand } from './components/Brand';
+import { ErrorPanel } from './components/ErrorPanel';
 import { ResultCard } from './components/ResultCard';
 import { SpinForm } from './components/SpinForm';
+import { messageForStatus } from './errorMessages';
 
 type SpinState =
   | { kind: 'idle' }
@@ -45,14 +47,14 @@ export function App() {
         });
       }
     } catch {
-      setState({ kind: 'error', status: 0, message: 'Could not reach the spin service.' });
+      setState({ kind: 'error', status: 0, message: messageForStatus(0) });
     }
   }, []);
 
   return (
     <main className="shell">
       <header className="shell__header">
-        <h1 className="shell__logo">Letterboxd Roulette</h1>
+        <Brand spinning={state.kind === 'pending'} />
         <p className="shell__tagline">Pick tonight's film, at random, from any Letterboxd watchlist.</p>
       </header>
 
@@ -68,9 +70,7 @@ export function App() {
       ) : null}
 
       {state.kind === 'error' ? (
-        <p role="alert" className="error">
-          {state.message}
-        </p>
+        <ErrorPanel status={state.status} message={state.message} />
       ) : null}
 
       <footer className="shell__footer">

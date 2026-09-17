@@ -63,16 +63,19 @@ describe('ResultCard', () => {
 });
 
 describe('messageForStatus', () => {
-  it('maps known statuses to a readable message', () => {
-    expect(messageForStatus(400)).toMatch(/doesn't look like/);
-    expect(messageForStatus(404)).toMatch(/not found/);
-    expect(messageForStatus(422)).toMatch(/private or empty/);
-    expect(messageForStatus(429)).toMatch(/Too many spins/);
-    expect(messageForStatus(503)).toMatch(/busy/);
-    expect(messageForStatus(502)).toMatch(/went wrong/);
+  const UNIFIED = "Nothing found — the list may be empty, private, or doesn't exist.";
+
+  it('uses the single unified message for every non-rate-limit failure', () => {
+    for (const status of [400, 404, 422, 502, 503, 0]) {
+      expect(messageForStatus(status)).toBe(UNIFIED);
+    }
   });
 
-  it('prefers the server message when present', () => {
-    expect(messageForStatus(404, 'List not found')).toBe('List not found');
+  it('ignores server detail for unified failures even when the API supplies an error', () => {
+    expect(messageForStatus(404, 'List not found')).toBe(UNIFIED);
+  });
+
+  it('keeps the rate-limit message distinct for 429', () => {
+    expect(messageForStatus(429)).toBe('Too many spins! Wait a moment, then try again.');
   });
 });

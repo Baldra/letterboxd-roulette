@@ -23,6 +23,10 @@ export function SpinForm({ query, pending, onQueryChange, onSubmit }: SpinFormPr
       <label htmlFor="spin-query" className="spin-form__label">
         Whose watchlist or list should we spin?
       </label>
+      <p className="spin-form__help">
+        Type a username — or <code>username/list-slug</code> — then spin to draw one random film from
+        that watchlist or list.
+      </p>
       <div className="spin-form__row">
         <input
           id="spin-query"

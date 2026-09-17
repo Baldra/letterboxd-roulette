@@ -7,6 +7,9 @@
   --lb-muted: #678;
   --lb-accent: #00e054;
   --lb-accent-dark: #00b13f;
+  --lb-orange: #ff8000;
+  --lb-green: #00e054;
+  --lb-blue: #0ea2cc;
 }
 
 * {
@@ -34,12 +37,66 @@ body {
   text-align: center;
 }
 
-.shell__logo {
-  margin: 0;
-  font-size: 2rem;
+/* Brand */
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand__mark {
+  width: 64px;
+  height: 96px;
+  border-radius: 18px;
+  background: var(--lb-bg);
+  border: 2px solid var(--lb-panel-border);
+  box-shadow: inset 0 0 0 4px var(--lb-panel);
+  overflow: hidden;
+}
+
+.brand__tile--one {
+  fill: var(--lb-orange);
+}
+
+.brand__tile--two {
+  fill: var(--lb-green);
+}
+
+.brand__tile--three {
+  fill: var(--lb-blue);
+}
+
+.brand--spinning .brand__reel {
+  animation: brand-reel-spin 0.6s steps(4) infinite;
+}
+
+@keyframes brand-reel-spin {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-96px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand--spinning .brand__reel {
+    animation: none;
+  }
+}
+
+.brand__wordmark {
+  font-size: 1.7rem;
   font-weight: 700;
   color: var(--lb-title);
-  letter-spacing: -0.02em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.brand__wordmark-accent {
+  color: var(--lb-accent);
 }
 
 .shell__tagline {
@@ -67,6 +124,20 @@ body {
 .spin-form__label {
   font-size: 0.85rem;
   color: var(--lb-muted);
+}
+
+.spin-form__help {
+  margin: -2px 0 0;
+  font-size: 0.82rem;
+  color: var(--lb-muted);
+}
+
+.spin-form__help code {
+  background: var(--lb-panel);
+  border: 1px solid var(--lb-panel-border);
+  border-radius: 4px;
+  padding: 0 4px;
+  font-size: 0.78rem;
 }
 
 .spin-form__row {
@@ -214,10 +285,27 @@ body {
 /* Error */
 
 .error {
-  padding: 14px 16px;
-  border: 1px solid #803b3b;
-  border-radius: 8px;
-  background: rgba(160, 60, 60, 0.15);
-  color: #ffb4b4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 16px;
+  border: 1px solid var(--lb-panel-border);
+  border-radius: 10px;
+  background: var(--lb-panel);
+  color: var(--lb-title);
   text-align: center;
+}
+
+.error__gif {
+  width: 150px;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--lb-panel-border);
+  background: var(--lb-bg);
+}
+
+.error__message {
+  margin: 0;
 }
