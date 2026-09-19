@@ -1,7 +1,12 @@
+import { config } from 'dotenv';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const __dirname = dirname(fileURLToPath(import.meta.url));
+config({ path: resolve(__dirname, '../../../../.env') });
+
 import { serve } from '@hono/node-server';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { access, readFile } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
 import type { Context } from 'hono';
 import { createApp } from './app.js';
 
