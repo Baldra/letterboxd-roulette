@@ -2,6 +2,8 @@ import { getConnInfo } from '@hono/node-server/conninfo';
 import type { Context } from 'hono';
 import { Hono } from 'hono';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
+import { type ArtworkProvider } from '../lib/artwork-provider.js';
+import { type TtlCache } from '../lib/cache.js';
 import { HttpError } from '../lib/errors.js';
 import { type SlidingWindowLimiter } from '../lib/limiter.js';
 import { type SpinEngine } from '../lib/spin-engine.js';
@@ -10,6 +12,8 @@ import { resolveQuery } from '../lib/url-resolver.js';
 export interface SpinRouteDeps {
   engine: SpinEngine;
   limiter: SlidingWindowLimiter;
+  artwork: ArtworkProvider;
+  artworkCache: TtlCache<string>;
 }
 
 function clientIp(c: Context): string {
@@ -44,7 +48,15 @@ export function spinRoute(deps: SpinRouteDeps): Hono {
 
     try {
       const result = await deps.engine.spin(resolved);
-      return c.json(result, 200);
+      const response = c.json(result, 200);
+
+      // Fire-and-forget: fetch artwork in background, write to cache
+      const { film } = result;
+      deps.artwork.fetchArt(film.title, film.year).then((url) => {
+        if (url) deps.artworkCache.set(film.slug, url, 60_000);
+      }).catch(() => {});
+
+      return response;
     } catch (err) {
       if (err instanceof HttpError) {
         const headers: Record<string, string> = {};

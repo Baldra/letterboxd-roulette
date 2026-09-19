@@ -1,6 +1,6 @@
 import { type Film, type ListInfo } from '@lr/shared';
+import { type ArtworkProvider } from './artwork-provider.js';
 import { badGateway, notFound, serviceUnavailable, unprocessable } from './errors.js';
-import { fetchFilmArt, NEGATIVE_TTL_MS, ARTWORK_PAGE_TTL_MS } from './fetch-film-art.js';
 import { type LetterboxdClient } from './letterboxd-client.js';
 import { detectListState } from './list-meta.js';
 import { parseFilms, parseListLabel, parseMaxPage } from './parse.js';
@@ -9,6 +9,7 @@ import { pick } from './sampler.js';
 import { type ResolvedQuery } from './url-resolver.js';
 
 export const LIST_PAGE_TTL_MS = 600_000;
+const NEGATIVE_TTL_MS = 60_000;
 
 export interface SpinResult {
   film: Film;
@@ -25,7 +26,10 @@ function pageUrl(baseUrl: string, page: number): string {
  * and never fetches the whole list.
  */
 export class SpinEngine {
-  constructor(private readonly client: LetterboxdClient) {}
+  constructor(
+    private readonly client: LetterboxdClient,
+    private readonly artwork: ArtworkProvider,
+  ) {}
 
   async spin(resolved: ResolvedQuery): Promise<SpinResult> {
     const page1 = await this.client.fetchPage(resolved.url, LIST_PAGE_TTL_MS, NEGATIVE_TTL_MS);
@@ -89,13 +93,11 @@ export class SpinEngine {
       throw badGateway('Letterboxd page did not contain the expected film');
     }
 
-    const artworkUrl = await fetchFilmArt(this.client, entry.slug);
     const film: Film = {
       title: entry.title,
       year: entry.year,
       slug: entry.slug,
       url: entry.url,
-      ...(artworkUrl ? { artworkUrl } : {}),
     };
 
     const list: ListInfo = {
