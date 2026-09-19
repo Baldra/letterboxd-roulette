@@ -5,47 +5,51 @@ import { type FetchedPage, LetterboxdClient } from '../src/lib/letterboxd-client
 import { SpinEngine } from '../src/lib/spin-engine.js';
 import { readFixture } from './helpers.js';
 import { resolveQuery } from '../src/lib/url-resolver.js';
+import type { ArtworkProvider } from '../src/lib/artwork-provider.js';
 
-interface FetchState {
-  urls: string[];
-}
-
-function classify(url: string): 'page1' | 'last' | 'intermediate' | 'film' | 'other' {
+function classify(url: string): 'page1' | 'last' | 'intermediate' | 'other' {
   if (url === 'https://letterboxd.com/username/watchlist/') return 'page1';
   if (url === 'https://letterboxd.com/username/watchlist/page/6/') return 'last';
   if (/^https:\/\/letterboxd\.com\/username\/watchlist\/page\/([2-5])\/?$/.test(url)) return 'intermediate';
-  if (/^https:\/\/letterboxd\.com\/film\/[a-z0-9-]+\/?$/.test(url)) return 'film';
   return 'other';
 }
 
+function mockArtwork(calls: Array<{ title: string; year: string }>): ArtworkProvider {
+  return {
+    async fetchArt(title: string, year: string) {
+      calls.push({ title, year });
+      return 'https://example.com/poster.jpg';
+    },
+  };
+}
+
 test('a spin fetches only page 1, the last page, and a single target page', async () => {
-  const [page1, last, film] = await Promise.all([
+  const [page1, last] = await Promise.all([
     readFixture('watchlist-page-1.html'),
     readFixture('watchlist-page-6.html'),
-    readFixture('film-the-captive.html'),
   ]);
-  const state: FetchState = { urls: [] };
+  const state: { urls: string[] } = { urls: [] };
   const fetchImpl = async (url: string | URL | Request): Promise<Response> => {
     const u = typeof url === 'string' ? url : url instanceof URL ? url.toString() : url.url;
     state.urls.push(u);
     if (u === 'https://letterboxd.com/username/watchlist/') return new Response(page1, { status: 200 });
     if (/watchlist\/page\/6\/$/.test(u)) return new Response(last, { status: 200 });
     if (/watchlist\/page\/\d+\/$/.test(u)) return new Response(page1, { status: 200 });
-    if (/\/film\//.test(u)) return new Response(film, { status: 200 });
     return new Response('nope', { status: 404 });
   };
 
   const cache = new TtlCache<FetchedPage>();
   const client = new LetterboxdClient(cache, { fetchImpl });
-  const engine = new SpinEngine(client);
+  const artworkCalls: Array<{ title: string; year: string }> = [];
+  const artwork = mockArtwork(artworkCalls);
+  const engine = new SpinEngine(client, artwork);
   const resolved = resolveQuery('username')!;
 
   const spin1Before = state.urls.length;
   const result1 = await engine.spin(resolved);
   const spin1Fetches = state.urls.slice(spin1Before);
 
-  const pageFetches1 = spin1Fetches.filter((u) => classify(u) !== 'film');
-  const classified = pageFetches1.map(classify);
+  const classified = spin1Fetches.map(classify);
   const unique = [...new Set(classified)];
   assert.ok(unique.includes('page1'), 'page 1 is always fetched first');
   assert.ok(unique.includes('last'), 'the last page is always fetched when P > 1');
@@ -57,18 +61,19 @@ test('a spin fetches only page 1, the last page, and a single target page', asyn
   assert.equal(result1.list.owner, 'username');
   assert.equal(result1.list.count, 160);
 
+  assert.equal(artworkCalls.length, 0, 'artwork is not fetched by the engine');
+
   const spin2Before = state.urls.length;
   await engine.spin(resolved);
   const spin2Fetches = state.urls.slice(spin2Before);
-  const pageFetches2 = spin2Fetches.filter((u) => classify(u) !== 'film');
-  const pages2 = pageFetches2.map(classify);
+  const pages2 = spin2Fetches.map(classify);
   assert.equal(
     pages2.includes('page1'),
     false,
     'page 1 should be reused from cache on the second spin',
   );
   assert.equal(pages2.includes('last'), false, 'last page should be reused from cache');
-  // No outbound page loads for already-fetched pages; only a possibly-new
-  // intermediate target page (if the draw lands on one) or none.
   assert.ok(pages2.filter((c) => c === 'intermediate').length <= 1);
+
+  assert.equal(artworkCalls.length, 0, 'artwork is still not fetched by the engine');
 });

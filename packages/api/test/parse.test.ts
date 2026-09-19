@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { fixturePath } from './helpers.js';
-import { parseFilms, parseListLabel, parseMaxPage, parseOgImage } from '../src/lib/parse.js';
+import { parseFilms, parseListLabel, parseMaxPage } from '../src/lib/parse.js';
 
 test('fixtures load from disk', async () => {
   for (const name of [
@@ -57,14 +57,4 @@ test('parseListLabel strips the Letterboxd suffix', async () => {
 
 test('parseListLabel returns null without a title', () => {
   assert.equal(parseListLabel('<html></html>'), null);
-});
-
-test('parseOgImage reads the og:image from a film page', async () => {
-  const html = await readFile(fixturePath('film-the-captive.html'), 'utf8');
-  const image = parseOgImage(html);
-  assert.ok(image?.startsWith('https://a.ltrbxd.com/'));
-});
-
-test('parseOgImage returns null when absent', () => {
-  assert.equal(parseOgImage('<html><body></body></html>'), null);
 });

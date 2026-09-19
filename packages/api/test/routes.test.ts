@@ -35,9 +35,6 @@ function watchlistMocks(): Mock {
     if (/\/watchlist\/page\/\d+\/$/.test(u)) {
       return { status: 200, html: await readFixture('watchlist-page-1.html') };
     }
-    if (/\/film\//.test(u)) {
-      return { status: 200, html: await readFixture('film-the-captive.html') };
-    }
     return { status: 404, html: '<title>Letterboxd - Not Found</title>' };
   });
 }
@@ -52,7 +49,7 @@ test('successful spin returns the SpinResponse shape', async () => {
   assert.equal(typeof body.film.title, 'string');
   assert.equal(typeof body.film.year, 'string');
   assert.ok(body.film.url.startsWith('https://letterboxd.com/film/'));
-  assert.ok(typeof body.film.artworkUrl === 'string');
+  assert.ok(body.film.artworkUrl === undefined || typeof body.film.artworkUrl === 'string');
   assert.ok(body.list);
   assert.equal(body.list.owner, 'username');
   assert.equal(body.list.count, 160);

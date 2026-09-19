@@ -104,9 +104,3 @@ export function parseListLabel(html: string): string | null {
     .replace(/\s*[•|]\s*Letterboxd\s*$/i, '')
     .trim();
 }
-
-const OG_IMAGE_RE = /<meta\s+property="og:image"\s+content="([^"]+)"/;
-
-export function parseOgImage(html: string): string | null {
-  return html.match(OG_IMAGE_RE)?.[1] ?? null;
-}
