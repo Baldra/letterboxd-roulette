@@ -41,58 +41,106 @@ body {
 
 .brand {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 16px;
 }
 
 .brand__mark {
-  width: 64px;
-  height: 96px;
-  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 14px;
   background: var(--lb-bg);
   border: 2px solid var(--lb-panel-border);
-  box-shadow: inset 0 0 0 4px var(--lb-panel);
+  box-shadow: inset 0 0 0 3px var(--lb-panel);
+}
+
+.brand__reel {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--lb-panel);
   overflow: hidden;
 }
 
+.brand__reel-track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+
+.brand__tile {
+  display: block;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.brand__sym {
+  display: block;
+  width: 32px;
+  height: 32px;
+}
+
 .brand__tile--one {
-  fill: var(--lb-orange);
+  background: var(--lb-orange);
 }
 
 .brand__tile--two {
-  fill: var(--lb-green);
+  background: var(--lb-green);
 }
 
 .brand__tile--three {
-  fill: var(--lb-blue);
+  background: var(--lb-blue);
 }
 
-.brand--spinning .brand__reel {
-  animation: brand-reel-spin 0.6s steps(4) infinite;
+.brand--hit .brand__mark {
+  animation: brand-hit 1.05s ease-in-out forwards;
 }
 
-@keyframes brand-reel-spin {
-  from {
-    transform: translateY(0);
+@keyframes brand-hit {
+  0% {
+    transform: scale(1);
+    box-shadow: inset 0 0 0 3px var(--lb-panel);
   }
-  to {
-    transform: translateY(-96px);
+  14% {
+    transform: scale(1.05);
+    box-shadow:
+      inset 0 0 0 3px var(--lb-panel),
+      0 0 0 3px rgba(0, 224, 84, 0.4),
+      0 0 24px 6px rgba(0, 224, 84, 0.22);
+  }
+  72% {
+    transform: scale(1.05);
+    box-shadow:
+      inset 0 0 0 3px var(--lb-panel),
+      0 0 0 3px rgba(0, 224, 84, 0.4),
+      0 0 24px 6px rgba(0, 224, 84, 0.22);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: inset 0 0 0 3px var(--lb-panel);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .brand--spinning .brand__reel {
+  .brand--hit .brand__mark {
     animation: none;
   }
 }
 
 .brand__wordmark {
-  font-size: 1.7rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: var(--lb-title);
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .brand__wordmark-accent {

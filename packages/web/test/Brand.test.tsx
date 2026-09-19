@@ -5,16 +5,17 @@ import { Brand } from '../src/components/Brand';
 afterEach(cleanup);
 
 describe('Brand', () => {
-  it('renders the three-circle mark and wordmark', () => {
+  it('renders three vertical reels and the wordmark', () => {
     const { container } = render(<Brand spinning={false} />);
     expect(container.querySelector('.brand__mark')).toBeTruthy();
-    const tiles = container.querySelectorAll(
-      '.brand__tile--one, .brand__tile--two, .brand__tile--three',
-    );
-    expect(tiles.length).toBe(3);
-    expect(container.querySelector('.brand__tile--one')).toBeTruthy();
-    expect(container.querySelector('.brand__tile--two')).toBeTruthy();
-    expect(container.querySelector('.brand__tile--three')).toBeTruthy();
+    expect(container.querySelectorAll('.brand__reel').length).toBe(3);
+    const tiles = container.querySelectorAll('.brand__tile');
+    const classes = [...tiles].map((el) => el.className);
+    expect(tiles.length).toBe(9);
+    expect(classes.some((c) => c.includes('brand__tile--one'))).toBe(true);
+    expect(classes.some((c) => c.includes('brand__tile--two'))).toBe(true);
+    expect(classes.some((c) => c.includes('brand__tile--three'))).toBe(true);
+    expect(container.querySelectorAll('.brand__sym').length).toBe(39);
     const wordmark = container.querySelector('.brand__wordmark');
     expect(wordmark?.textContent?.replace(/\s+/g, ' ')).toMatch(/Letterboxd Roulette/i);
   });
