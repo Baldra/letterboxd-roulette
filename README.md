@@ -2,7 +2,7 @@
 
 Random film picker for Letterboxd watchlists and public lists.
 
-**[Live App](https://YOUR_APP.onrender.com/)**
+**[Live App](https://letterboxd-roulette-j5k0.onrender.com/)**
 
 ## What it does
 

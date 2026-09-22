@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://YOUR_APP.onrender.com/sitemap.xml
+Sitemap: https://letterboxd-roulette-j5k0.onrender.com/sitemap.xml
