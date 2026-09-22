@@ -55,6 +55,19 @@ export function createApp(options: AppOptions = {}): Hono {
   });
 
   const app = new Hono();
+
+  app.use('*', async (c, next) => {
+    await next();
+    c.header('X-Content-Type-Options', 'nosniff');
+    c.header('X-Frame-Options', 'DENY');
+    c.header('Referrer-Policy', 'strict-origin-when-cross-origin');
+    c.header('X-XSS-Protection', '1; mode=block');
+    c.header(
+      'Permissions-Policy',
+      'camera=(), microphone=(), geolocation=()',
+    );
+  });
+
   app.route('/api', spinRoute({ engine, limiter, artwork, artworkCache }));
   app.route('/api', gifRoute({ provider: gifProvider }));
   app.route('/api', artworkRoute({ artworkCache }));

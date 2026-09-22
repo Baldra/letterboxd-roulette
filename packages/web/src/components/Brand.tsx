@@ -229,9 +229,9 @@ export function Brand({ spinning }: BrandProps) {
           </span>
         ))}
       </span>
-      <span className="brand__wordmark">
+      <h1 className="brand__wordmark">
         Letterboxd <span className="brand__wordmark-accent">Roulette</span>
-      </span>
+      </h1>
     </div>
   );
 }

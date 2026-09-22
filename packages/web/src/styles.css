@@ -135,6 +135,7 @@ body {
 }
 
 .brand__wordmark {
+  margin: 0;
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--lb-title);
