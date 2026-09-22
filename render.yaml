@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: letterboxd-roulette
+    runtime: docker
+    region: ohio
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8080
+      - key: TMDB_API_KEY
+        sync: false
+      - key: GIPHY_API_KEY
+        sync: false

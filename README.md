@@ -2,7 +2,7 @@
 
 Random film picker for Letterboxd watchlists and public lists.
 
-**[Live App](https://letterboxd-roulette.fly.dev/)**
+**[Live App](https://YOUR_APP.onrender.com/)**
 
 ## What it does
 
@@ -27,7 +27,7 @@ Enter a Letterboxd username or list URL, spin, and get a random film. Picks unif
 | Frontend | React 19 + Vite 8 |
 | Monorepo | npm workspaces |
 | Testing | node:test (API), Vitest (web) |
-| Deployment | Fly.io |
+| Deployment | Render |
 
 ## Getting started
 
@@ -130,7 +130,7 @@ letterboxd-roulette/
 │   └── shared/       # Shared TypeScript types
 ├── openspec/         # Design specs
 ├── Dockerfile
-└── fly.toml
+└── render.yaml
 ```
 
 ## License
